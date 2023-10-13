@@ -246,7 +246,10 @@ export default function Create() {
 
     appointments.push(newAppointment);
 
+    // İçeriği sıfırla
+    setSelectedBarber(null);
     setSelectedTime(null);
+    setSelectedService(null);
     setSelectedDate(new Date());
 
     toast.success('Randevu oluşturuldu.');
