@@ -1,0 +1,7 @@
+.react-datepicker {
+  border: none !important;
+}
+
+.react-datepicker__header {
+  border-bottom: none !important;
+}

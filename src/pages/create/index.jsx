@@ -2,11 +2,16 @@ import { Fragment, useEffect, useState } from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import tr from 'date-fns/locale/tr';
-import { isSameDay, parse } from 'date-fns';
-import { Listbox, Transition } from '@headlessui/react';
-import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { format, isSameDay, parse } from 'date-fns';
+import { Listbox, Popover, Transition } from '@headlessui/react';
+import {
+  ChevronUpDownIcon,
+  CheckIcon,
+  CalendarDaysIcon,
+} from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 registerLocale('tr', tr);
+import './css/style.css';
 
 const appointments = [
   {
@@ -135,6 +140,7 @@ const barbers = [
 ];
 
 const holiday = 0;
+
 export default function Create() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const formattedSelectedDate = `${selectedDate.getDate()}/${
@@ -265,17 +271,42 @@ export default function Create() {
     <div className='flex'>
       <div className='flex-1'>
         <h1 className='text-2xl font-bold mb-5'>Randevu Oluştur</h1>
-        <div className='z-50 relative'>
-          <ReactDatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            filterDate={(date) => date.getDay() !== holiday}
-            locale='tr'
-            dateFormat='dd/MM/yyyy'
-            minDate={new Date()}
-            className='border border-gray-300 rounded'
-          />
-        </div>
+
+        <Popover>
+          {({ open, close }) => (
+            <>
+              <Popover.Button className='border px-4 py-2 rounded-xl flex items-center'>
+                <CalendarDaysIcon className='h-5 w-5 inline-block mr-2' />
+                {format(selectedDate, 'dd-MM-yyyy')}
+              </Popover.Button>
+              <Transition
+                as={Fragment}
+                enter='transition ease-out duration-200'
+                enterFrom='opacity-0 translate-y-1'
+                enterTo='opacity-100 translate-y-0'
+                leave='transition ease-in duration-150'
+                leaveFrom='opacity-100 translate-y-0'
+                leaveTo='opacity-0 translate-y-1'
+              >
+                <Popover.Panel className='absolute z-50 shadow rounded-xl overflow-auto p-2 pb-0 bg-white'>
+                  <ReactDatePicker
+                    selected={selectedDate}
+                    onChange={(date) => {
+                      setSelectedDate(date);
+                      close();
+                    }}
+                    filterDate={(date) => date.getDay() !== holiday}
+                    locale='tr'
+                    dateFormat='dd/MM/yyyy'
+                    minDate={new Date()}
+                    showMonthDropdown
+                    inline
+                  />
+                </Popover.Panel>
+              </Transition>
+            </>
+          )}
+        </Popover>
 
         <div className='flex items-center gap-2 z-10'>
           <div className='mt-5'>
