@@ -271,51 +271,51 @@ export default function Create() {
   }, [selectedBarber, selectedTime, availableTimesByBarber]);
 
   return (
-    <div className='flex'>
-      <div className='flex-1'>
+    <div className='grid gap-5 md:grid-cols-2'>
+      <div className=''>
         <h1 className='text-2xl font-bold mb-5'>Randevu Oluştur</h1>
 
-        <Popover>
-          {({ open, close }) => (
-            <>
-              <Popover.Button className='border px-4 py-2 rounded-xl flex items-center'>
-                <CalendarDaysIcon className='h-5 w-5 inline-block mr-2' />
-                {format(selectedDate, 'dd-MM-yyyy')}
-              </Popover.Button>
-              <Transition
-                as={Fragment}
-                enter='transition ease-out duration-200'
-                enterFrom='opacity-0 translate-y-1'
-                enterTo='opacity-100 translate-y-0'
-                leave='transition ease-in duration-150'
-                leaveFrom='opacity-100 translate-y-0'
-                leaveTo='opacity-0 translate-y-1'
-              >
-                <Popover.Panel className='absolute z-50 shadow rounded-xl overflow-auto p-2 pb-0 bg-white'>
-                  <ReactDatePicker
-                    selected={selectedDate}
-                    onChange={(date) => {
-                      setSelectedDate(date);
-                      close();
-                    }}
-                    filterDate={(date) => date.getDay() !== holiday}
-                    locale='tr'
-                    dateFormat='dd/MM/yyyy'
-                    minDate={new Date()}
-                    showMonthDropdown
-                    inline
-                  />
-                </Popover.Panel>
-              </Transition>
-            </>
-          )}
-        </Popover>
+        <div className='grid gap-5'>
+          <Popover>
+            {({ open, close }) => (
+              <>
+                <Popover.Button className='border px-4 py-2 rounded-xl flex items-center'>
+                  <CalendarDaysIcon className='h-5 w-5 inline-block mr-2' />
+                  {format(selectedDate, 'dd-MM-yyyy')}
+                </Popover.Button>
+                <Transition
+                  as={Fragment}
+                  enter='transition ease-out duration-200'
+                  enterFrom='opacity-0 translate-y-1'
+                  enterTo='opacity-100 translate-y-0'
+                  leave='transition ease-in duration-150'
+                  leaveFrom='opacity-100 translate-y-0'
+                  leaveTo='opacity-0 translate-y-1'
+                >
+                  <Popover.Panel className='absolute z-50 shadow rounded-xl overflow-auto p-2 pb-0 bg-white'>
+                    <ReactDatePicker
+                      selected={selectedDate}
+                      onChange={(date) => {
+                        setSelectedDate(date);
+                        close();
+                      }}
+                      filterDate={(date) => date.getDay() !== holiday}
+                      locale='tr'
+                      dateFormat='dd/MM/yyyy'
+                      minDate={new Date()}
+                      showMonthDropdown
+                      inline
+                    />
+                  </Popover.Panel>
+                </Transition>
+              </>
+            )}
+          </Popover>
 
-        <div className='flex items-center gap-2 z-10'>
-          <div className='mt-5'>
+          <div>
             <Listbox value={selectedBarber} onChange={setSelectedBarber}>
               <div className='relative z-20'>
-                <Listbox.Button className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'>
+                <Listbox.Button className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 text-sm w-full md:w-auto'>
                   <span className='block truncate'>
                     {selectedBarber ? selectedBarber.name : 'Berber Seçiniz'}
                   </span>
@@ -332,7 +332,7 @@ export default function Create() {
                   leaveFrom='opacity-100'
                   leaveTo='opacity-0'
                 >
-                  <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                  <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm w-full md:w-auto'>
                     {barbers.map((barber) => (
                       <Listbox.Option key={barber.id} value={barber}>
                         {({ selected, active }) => (
@@ -366,7 +366,7 @@ export default function Create() {
             </Listbox>
           </div>
 
-          <div className='mt-5'>
+          <div>
             <Listbox value={selectedTime} onChange={setSelectedTime}>
               <div className='relative z-10'>
                 <Listbox.Button
@@ -375,7 +375,7 @@ export default function Create() {
                     selectedBarber === null
                       ? 'cursor-not-allowed opacity-50'
                       : 'cursor-default'
-                  } relative rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm
+                  } relative rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 text-sm w-full md:w-auto
                   
                   `}
                 >
@@ -406,7 +406,8 @@ export default function Create() {
                                 : active
                                 ? 'text-white bg-blue-600'
                                 : 'text-gray-900'
-                            } cursor-default select-none relative py-2 pl-10 pr-4 group`}
+                            } cursor-default select-none relative py-2 pl-10 pr-4 group
+                            `}
                           >
                             {selected ? (
                               <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 group-hover:text-white'>
@@ -433,7 +434,7 @@ export default function Create() {
             </Listbox>
           </div>
 
-          <div className='mt-5'>
+          <div>
             <Listbox value={selectedService} onChange={setSelectedService}>
               <div className='relative'>
                 <Listbox.Button
@@ -442,7 +443,7 @@ export default function Create() {
                     selectedTime === null
                       ? 'cursor-not-allowed opacity-50'
                       : 'cursor-default'
-                  } relative rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm}`}
+                  } relative rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 text-sm w-full md:w-auto`}
                 >
                   <span className='block truncate'>
                     {selectedService ? selectedService.name : 'Hizmet Seçiniz'}
@@ -460,7 +461,7 @@ export default function Create() {
                   leaveFrom='opacity-100'
                   leaveTo='opacity-0'
                 >
-                  <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                  <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-sm w-full md:w-auto'>
                     {services.map((service) => (
                       <Listbox.Option key={service.id} value={service}>
                         {({ selected, active }) => (
