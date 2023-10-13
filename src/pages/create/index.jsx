@@ -8,8 +8,6 @@ import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 registerLocale('tr', tr);
 
-import { createPopper } from '@popperjs/core';
-
 const appointments = [
   {
     id: 1,
@@ -274,7 +272,8 @@ export default function Create() {
             filterDate={(date) => date.getDay() !== holiday}
             locale='tr'
             dateFormat='dd/MM/yyyy'
-            className='border border-gray-300 rounded-xl p-2'
+            minDate={new Date()}
+            className='border border-gray-300 rounded'
           />
         </div>
 
