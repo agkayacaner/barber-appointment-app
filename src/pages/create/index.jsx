@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import ReactDatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import tr from 'date-fns/locale/tr';
@@ -234,7 +234,7 @@ export default function Create() {
       date: formattedSelectedDate,
       time: selectedTime.time,
       name: 'Caner Ağkaya',
-      barber: 'Arif Canbay',
+      barber: selectedBarber.name,
       service: selectedService.name,
     };
 
@@ -246,6 +246,21 @@ export default function Create() {
     toast.success('Randevu oluşturuldu.');
   };
 
+  useEffect(() => {
+    // Eğer selectedBarber null değilse (bir berber seçilmişse) ve
+    // selectedTime null değilse (bir saat seçilmişse),
+    // seçilen berberin çalıştığı saatler ile mevcut seçili saat
+    // uyumsuzsa, seçili saati sıfırlar.
+    if (selectedBarber && selectedTime) {
+      const selectedTimeExists = availableTimesByBarber.some(
+        (time) => time.time === selectedTime.time
+      );
+      if (!selectedTimeExists) {
+        setSelectedTime(null);
+      }
+    }
+  }, [selectedBarber, selectedTime, availableTimesByBarber]);
+
   return (
     <div className='flex'>
       <div className='flex-1'>
@@ -255,180 +270,185 @@ export default function Create() {
           filterDate={(date) => date.getDay() !== holiday}
           locale='tr'
           dateFormat='dd/MM/yyyy'
-          className='border border-gray-300 rounded-xl p-2 w-full'
+          className='border border-gray-300 rounded-xl p-2'
         />
 
-        <div className='mt-5'>
-          <Listbox value={selectedBarber} onChange={setSelectedBarber}>
-            <div className='relative z-20'>
-              <Listbox.Button
-                aria-disabled={selectedTime !== null}
-                className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'
-              >
-                <span className='block truncate'>
-                  {selectedBarber ? selectedBarber.name : 'Berber Seçiniz'}
-                </span>
-                <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
-                  <ChevronUpDownIcon
-                    className='h-5 w-5 text-gray-400'
-                    aria-hidden='true'
-                  />
-                </span>
-              </Listbox.Button>
-              <Transition
-                as={Fragment}
-                leave='transition ease-in duration-100'
-                leaveFrom='opacity-100'
-                leaveTo='opacity-0'
-              >
-                <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                  {barbers.map((barber) => (
-                    <Listbox.Option key={barber.id} value={barber}>
-                      {({ selected, active }) => (
-                        <div
-                          className={`
+        <div className='flex items-center gap-2'>
+          <div className='mt-5'>
+            <Listbox value={selectedBarber} onChange={setSelectedBarber}>
+              <div className='relative z-20'>
+                <Listbox.Button className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'>
+                  <span className='block truncate'>
+                    {selectedBarber ? selectedBarber.name : 'Berber Seçiniz'}
+                  </span>
+                  <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
+                    <ChevronUpDownIcon
+                      className='h-5 w-5 text-gray-400'
+                      aria-hidden='true'
+                    />
+                  </span>
+                </Listbox.Button>
+                <Transition
+                  as={Fragment}
+                  leave='transition ease-in duration-100'
+                  leaveFrom='opacity-100'
+                  leaveTo='opacity-0'
+                >
+                  <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                    {barbers.map((barber) => (
+                      <Listbox.Option key={barber.id} value={barber}>
+                        {({ selected, active }) => (
+                          <div
+                            className={`
                         ${active ? 'text-white bg-blue-600' : 'text-black'}
                         cursor-default select-none relative py-2 pl-10 pr-4 group`}
-                        >
-                          {selected ? (
-                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 group-hover:text-white'>
-                              <CheckIcon
-                                className='h-5 w-5'
-                                aria-hidden='true'
-                              />
-                            </span>
-                          ) : null}
-                          <span
-                            className={`${
-                              selected ? 'font-semibold' : 'font-normal'
-                            } block truncate`}
                           >
-                            {barber.name}
-                          </span>
-                        </div>
-                      )}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Transition>
-            </div>
-          </Listbox>
-        </div>
-
-        <div className='mt-5'>
-          <Listbox value={selectedTime} onChange={setSelectedTime}>
-            <div className='relative z-10'>
-              <Listbox.Button
-                aria-disabled={selectedBarber === null}
-                className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'
-              >
-                <span className='block truncate'>
-                  {selectedTime ? selectedTime.time : 'Saat Seçiniz'}
-                </span>
-                <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
-                  <ChevronUpDownIcon
-                    className='h-5 w-5 text-gray-400'
-                    aria-hidden='true'
-                  />
-                </span>
-              </Listbox.Button>
-              <Transition
-                as={Fragment}
-                leave='transition ease-in duration-100'
-                leaveFrom='opacity-100'
-                leaveTo='opacity-0'
-              >
-                <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                  {availableTimesByBarber.map((time) => (
-                    <Listbox.Option key={time.id} value={time}>
-                      {({ selected, active }) => (
-                        <div
-                          className={`${
-                            unavailableTimesByBarber.includes(time.time)
-                              ? 'pointer-events-none text-gray-400 cursor-not-allowed'
-                              : active
-                              ? 'text-white bg-blue-600'
-                              : 'text-gray-900'
-                          } cursor-default select-none relative py-2 pl-10 pr-4 group`}
-                        >
-                          {selected ? (
-                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 group-hover:text-white'>
-                              <CheckIcon
-                                className='h-5 w-5'
-                                aria-hidden='true'
-                              />
+                            {selected ? (
+                              <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 group-hover:text-white'>
+                                <CheckIcon
+                                  className='h-5 w-5'
+                                  aria-hidden='true'
+                                />
+                              </span>
+                            ) : null}
+                            <span
+                              className={`${
+                                selected ? 'font-semibold' : 'font-normal'
+                              } block truncate`}
+                            >
+                              {barber.name}
                             </span>
-                          ) : null}
-                          <span
-                            className={`${
-                              selected ? 'font-semibold' : 'font-normal'
-                            } block truncate`}
-                          >
-                            {time.time}
-                          </span>
-                        </div>
-                      )}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Transition>
-            </div>
-          </Listbox>
-        </div>
+                          </div>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+            </Listbox>
+          </div>
 
-        <div className='mt-5'>
-          <Listbox value={selectedService} onChange={setSelectedService}>
-            <div className='relative'>
-              <Listbox.Button className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'>
-                <span className='block truncate'>
-                  {selectedService ? selectedService.name : 'Hizmet Seçiniz'}
-                </span>
-                <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
-                  <ChevronUpDownIcon
-                    className='h-5 w-5 text-gray-400'
-                    aria-hidden='true'
-                  />
-                </span>
-              </Listbox.Button>
-              <Transition
-                as={Fragment}
-                leave='transition ease-in duration-100'
-                leaveFrom='opacity-100'
-                leaveTo='opacity-0'
-              >
-                <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                  {services.map((service) => (
-                    <Listbox.Option key={service.id} value={service}>
-                      {({ selected, active }) => (
-                        <div
-                          className={`
+          <div className='mt-5'>
+            <Listbox value={selectedTime} onChange={setSelectedTime}>
+              <div className='relative z-10'>
+                <Listbox.Button
+                  aria-disabled={selectedBarber === null}
+                  className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'
+                >
+                  <span className='block truncate'>
+                    {selectedTime ? selectedTime.time : 'Saat Seçiniz'}
+                  </span>
+                  <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
+                    <ChevronUpDownIcon
+                      className='h-5 w-5 text-gray-400'
+                      aria-hidden='true'
+                    />
+                  </span>
+                </Listbox.Button>
+                <Transition
+                  as={Fragment}
+                  leave='transition ease-in duration-100'
+                  leaveFrom='opacity-100'
+                  leaveTo='opacity-0'
+                >
+                  <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                    {availableTimesByBarber.map((time) => (
+                      <Listbox.Option key={time.id} value={time}>
+                        {({ selected, active }) => (
+                          <div
+                            className={`${
+                              unavailableTimesByBarber.includes(time.time)
+                                ? 'pointer-events-none text-gray-400 cursor-not-allowed'
+                                : active
+                                ? 'text-white bg-blue-600'
+                                : 'text-gray-900'
+                            } cursor-default select-none relative py-2 pl-10 pr-4 group`}
+                          >
+                            {selected ? (
+                              <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 group-hover:text-white'>
+                                <CheckIcon
+                                  className='h-5 w-5'
+                                  aria-hidden='true'
+                                />
+                              </span>
+                            ) : null}
+                            <span
+                              className={`${
+                                selected ? 'font-semibold' : 'font-normal'
+                              } block truncate`}
+                            >
+                              {time.time}
+                            </span>
+                          </div>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+            </Listbox>
+          </div>
+
+          <div className='mt-5'>
+            <Listbox value={selectedService} onChange={setSelectedService}>
+              <div className='relative'>
+                <Listbox.Button className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'>
+                  <span className='block truncate'>
+                    {selectedService ? selectedService.name : 'Hizmet Seçiniz'}
+                  </span>
+                  <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
+                    <ChevronUpDownIcon
+                      className='h-5 w-5 text-gray-400'
+                      aria-hidden='true'
+                    />
+                  </span>
+                </Listbox.Button>
+                <Transition
+                  as={Fragment}
+                  leave='transition ease-in duration-100'
+                  leaveFrom='opacity-100'
+                  leaveTo='opacity-0'
+                >
+                  <Listbox.Options className='absolute mt-1 max-h-60 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                    {services.map((service) => (
+                      <Listbox.Option key={service.id} value={service}>
+                        {({ selected, active }) => (
+                          <div
+                            className={`
                         ${active ? 'text-white bg-blue-600' : 'text-black'}
                         cursor-default select-none relative py-2 pl-10 pr-4 group`}
-                        >
-                          {selected ? (
-                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 group-hover:text-white'>
-                              <CheckIcon
-                                className='h-5 w-5'
-                                aria-hidden='true'
-                              />
-                            </span>
-                          ) : null}
-                          <span
-                            className={`${
-                              selected ? 'font-semibold' : 'font-normal'
-                            } block truncate`}
                           >
-                            {service.name}
-                          </span>
-                        </div>
-                      )}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Transition>
-            </div>
-          </Listbox>
+                            {selected ? (
+                              <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 group-hover:text-white'>
+                                <CheckIcon
+                                  className='h-5 w-5'
+                                  aria-hidden='true'
+                                />
+                              </span>
+                            ) : null}
+                            <span
+                              className={`${
+                                selected ? 'font-semibold' : 'font-normal'
+                              } block truncate`}
+                            >
+                              {service.name}
+                            </span>
+                          </div>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </Transition>
+              </div>
+            </Listbox>
+          </div>
         </div>
+
+        {selectedBarber && selectedTime && selectedService && (
+          <div className='mt-5'>
+            <h2>Ödenecek Tutar: {selectedService.price} TL</h2>
+          </div>
+        )}
 
         <button
           onClick={handleSubmit}
