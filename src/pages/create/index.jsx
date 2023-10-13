@@ -8,6 +8,8 @@ import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 registerLocale('tr', tr);
 
+import { createPopper } from '@popperjs/core';
+
 const appointments = [
   {
     id: 1,
@@ -233,7 +235,7 @@ export default function Create() {
       id: Math.floor(Math.random() * 1000),
       date: formattedSelectedDate,
       time: selectedTime.time,
-      name: 'Caner Ağkaya',
+      name: 'Kemal Derviş',
       barber: selectedBarber.name,
       service: selectedService.name,
     };
@@ -264,16 +266,19 @@ export default function Create() {
   return (
     <div className='flex'>
       <div className='flex-1'>
-        <ReactDatePicker
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          filterDate={(date) => date.getDay() !== holiday}
-          locale='tr'
-          dateFormat='dd/MM/yyyy'
-          className='border border-gray-300 rounded-xl p-2'
-        />
+        <h1 className='text-2xl font-bold mb-5'>Randevu Oluştur</h1>
+        <div className='z-50 relative'>
+          <ReactDatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            filterDate={(date) => date.getDay() !== holiday}
+            locale='tr'
+            dateFormat='dd/MM/yyyy'
+            className='border border-gray-300 rounded-xl p-2'
+          />
+        </div>
 
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 z-10'>
           <div className='mt-5'>
             <Listbox value={selectedBarber} onChange={setSelectedBarber}>
               <div className='relative z-20'>
@@ -333,7 +338,13 @@ export default function Create() {
               <div className='relative z-10'>
                 <Listbox.Button
                   aria-disabled={selectedBarber === null}
-                  className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'
+                  className={`${
+                    selectedBarber === null
+                      ? 'cursor-not-allowed opacity-50'
+                      : 'cursor-default'
+                  } relative rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm
+                  
+                  `}
                 >
                   <span className='block truncate'>
                     {selectedTime ? selectedTime.time : 'Saat Seçiniz'}
@@ -392,7 +403,14 @@ export default function Create() {
           <div className='mt-5'>
             <Listbox value={selectedService} onChange={setSelectedService}>
               <div className='relative'>
-                <Listbox.Button className='relative cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm'>
+                <Listbox.Button
+                  aria-disabled={selectedTime === null}
+                  className={`${
+                    selectedTime === null
+                      ? 'cursor-not-allowed opacity-50'
+                      : 'cursor-default'
+                  } relative rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm}`}
+                >
                   <span className='block truncate'>
                     {selectedService ? selectedService.name : 'Hizmet Seçiniz'}
                   </span>
@@ -471,18 +489,37 @@ export default function Create() {
       </div>
 
       <div className='flex-1'>
-        <h2 className='mb-4'>Seçilen Tarihteki Randevular:</h2>
-        <ul className='space-y-2'>
-          {filteredAppointments.map((appointment) => (
-            <li
-              key={appointment.id}
-              className='px-4 py-3 border  rounded-xl text-sm'
-            >
-              {appointment.date} - {appointment.time} - {appointment.name} -{' '}
-              {appointment.barber} - {appointment.service}
-            </li>
-          ))}
-        </ul>
+        <div>
+          <h2 className='mb-4'>Seçilen Tarihteki Randevular:</h2>
+          <ul className='space-y-2'>
+            {filteredAppointments.map((appointment, i) => (
+              <li
+                key={appointment.id}
+                className='px-4 py-3 border  rounded-xl text-sm'
+              >
+                <span>{i + 1} - </span>
+                {appointment.date} - {appointment.time} - {appointment.name} -{' '}
+                {appointment.barber} - {appointment.service}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <hr className='my-10' />
+        <div>
+          <h2 className='mb-4'>Tüm Randevular:</h2>
+          <ul className='space-y-2'>
+            {appointments.map((appointment, i) => (
+              <li
+                key={appointment.id}
+                className='px-4 py-3 border  rounded-xl text-sm'
+              >
+                <span>{i + 1} - </span>
+                {appointment.date} - {appointment.time} - {appointment.name} -{' '}
+                {appointment.barber} - {appointment.service}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
