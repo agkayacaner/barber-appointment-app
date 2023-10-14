@@ -57,28 +57,27 @@ const appointments = [
 ];
 
 const workTimes = [
-  { id: 1, time: '08:00' },
-  { id: 2, time: '08:45' },
-  { id: 3, time: '09:30' },
-  { id: 4, time: '10:15' },
-  { id: 5, time: '11:00' },
-  { id: 6, time: '11:45' },
-  { id: 7, time: '13:00' },
-  { id: 8, time: '13:45' },
-  { id: 9, time: '14:30' },
-  { id: 10, time: '15:15' },
-  { id: 11, time: '16:00' },
-  { id: 12, time: '16:45' },
-  { id: 13, time: '17:30' },
-  { id: 14, time: '18:15' },
-  { id: 15, time: '19:00' },
-  { id: 16, time: '19:45' },
-  { id: 17, time: '20:30' },
-  { id: 18, time: '21:15' },
+  { id: 1, time: '08:00:00' },
+  { id: 2, time: '08:45:00' },
+  { id: 3, time: '09:30:00' },
+  { id: 4, time: '10:15:00' },
+  { id: 5, time: '11:00:00' },
+  { id: 6, time: '11:45:00' },
+  { id: 7, time: '13:00:00' },
+  { id: 8, time: '13:45:00' },
+  { id: 9, time: '14:30:00' },
+  { id: 10, time: '15:15:00' },
+  { id: 11, time: '16:00:00' },
+  { id: 12, time: '16:45:00' },
+  { id: 13, time: '17:30:00' },
+  { id: 14, time: '18:15:00' },
+  { id: 15, time: '19:00:00' },
+  { id: 16, time: '19:45:00' },
+  { id: 17, time: '20:30:00' },
 ];
 
 const services = [
-  { id: 1, name: 'Saç Kesimi', price: 50 },
+  { id: 1, name: 'Saç Kesimi', price: 50, status: 0 },
   { id: 2, name: 'Sakal Kesimi', price: 30 },
   { id: 3, name: 'Saç & Sakal Kesimi', price: 70 },
   { id: 4, name: 'Saç Boyama', price: 100 },
@@ -88,6 +87,14 @@ const barbers = [
   {
     id: 1,
     name: 'Arif Canbay',
+    availableTimes: [
+      { id: 1, time: '08:00' },
+      { id: 1, time: '09:00' },
+      { id: 1, time: '09:00' },
+      { id: 1, time: '09:00' },
+      { id: 1, time: '09:00' },
+      { id: 1, time: '13:00' },
+    ],
     appointments: [
       {
         id: 1,
@@ -239,12 +246,14 @@ export default function Create() {
       id: Math.floor(Math.random() * 1000),
       date: formattedSelectedDate,
       time: selectedTime.time,
-      name: 'Kemal Derviş',
+      user: 31,
       barber: selectedBarber.name,
       service: selectedService.name,
     };
 
     appointments.push(newAppointment);
+
+    console.log(newAppointment);
 
     // İçeriği sıfırla
     setSelectedBarber(null);
