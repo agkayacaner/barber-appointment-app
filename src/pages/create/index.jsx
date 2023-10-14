@@ -149,6 +149,7 @@ const barbers = [
 const holiday = 0;
 
 export default function Create() {
+  const [myData, setMyData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const formattedSelectedDate = `${selectedDate.getDate()}/${
     selectedDate.getMonth() + 1
@@ -241,6 +242,29 @@ export default function Create() {
     return 0;
   });
 
+  const fetchAppointments = async () => {
+    const response = await fetch(
+      'https://randevu.lamamedya.com/service_api.php',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Access-Control-Allow-Origin': '*', // Could work and fix the previous problem, but not in all APIs
+        },
+      }
+    );
+    const data = await response.json();
+    setMyData(data);
+  };
+
+  // const fetchWorkingHours = async () => {
+  //   const response = await fetch(
+  //     'https://randevu.lamamedya.com/workinghours_api.php'
+  //   );
+  //   const data = await response.json();
+  //   console.log(data);
+  // };
+
   const handleSubmit = () => {
     const newAppointment = {
       id: Math.floor(Math.random() * 1000),
@@ -265,6 +289,8 @@ export default function Create() {
   };
 
   useEffect(() => {
+    fetchAppointments();
+    // fetchWorkingHours();
     // Eğer selectedBarber null değilse (bir berber seçilmişse) ve
     // selectedTime null değilse (bir saat seçilmişse),
     // seçilen berberin çalıştığı saatler ile mevcut seçili saat
@@ -529,6 +555,15 @@ export default function Create() {
         >
           Randevu Oluştur
         </button>
+
+        <div className='mt-5'>
+          {myData.map((item) => (
+            <div key={item.id}>
+              <p>{item.id}</p>
+              <p>{item.name}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className='flex-1'>
